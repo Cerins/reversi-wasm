@@ -14,7 +14,8 @@ CXX = g++
 
 CFLAGS = -O3 -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["cwrap"]'
 
-CXXFLAGS = -std=c++17
+# Add highest level of debug
+CXXFLAGS = -std=c++17 -g -Wall -Wextra -pedantic
 
 LFLAGS = -s NO_EXIT_RUNTIME=1 
 
@@ -26,6 +27,11 @@ $(TARGET): $(SRC)
 tests: $(TEST_SRC)
 	$(CXX) $(CXXFLAGS) -o $(TEST_TARGET) $(TEST_SRC)
 	./$(TEST_TARGET)
+	rm -f $(TEST_TARGET)
+
+valgrind: $(TEST_SRC)
+	$(CXX) $(CXXFLAGS) -o $(TEST_TARGET) $(TEST_SRC)
+	valgrind --leak-check=full ./$(TEST_TARGET)
 	rm -f $(TEST_TARGET)
 
 .PHONY: clean

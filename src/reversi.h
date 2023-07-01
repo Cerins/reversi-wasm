@@ -19,8 +19,8 @@ enum Event {
 };
 
 struct Reversi {
-    int size;
-    int* board;
+    const int size = 8;
+    int board[64];
     Event event;
     bool turn;
 };

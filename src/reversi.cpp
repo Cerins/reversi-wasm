@@ -1,12 +1,11 @@
 #include "reversi.h"
 #include <iostream>
+#include <cstring>
 
 Reversi* createReversi(void){
     Reversi* reversi = new Reversi;
     // Reversi is played on a 8x8 board
-    reversi->size = 8;
     // The board is represented as a 1D array
-    reversi->board = new int[reversi->size*reversi->size];
     // Initialize the board to UNDEFINED
     for(int i=0;i<reversi->size*reversi->size;i++) {
         reversi->board[i] = UNDEFINED;
@@ -26,7 +25,6 @@ Reversi* createReversi(void){
 }
 
 void destroyReversi(Reversi* reversi){
-    delete[] reversi->board;
     delete reversi;
 }
 
@@ -149,4 +147,39 @@ void makeMove(Reversi* reversi, int x, int y){
     // this works because the turn is represented as a 0 or 1
     // black or white - binary
     reversi->turn = !reversi->turn;
+}
+
+void playerMove(Reversi* reversi, int x, int y){
+    makeMove(reversi, x, y);
+}
+
+void deepCopy(Reversi* reversi, Reversi* copy){
+    memcpy(copy, reversi, sizeof(Reversi));
+}
+bool passCheck(Reversi* reversi){
+    int boardSize = reversi->size;
+    // Make a copy of the reversi struct
+    Reversi* copy = new Reversi;
+    deepCopy(reversi, copy);
+    bool pass = true;
+    for(int i=0;i<boardSize;i++){
+        for(int j=0;j<boardSize;j++){
+            makeMove(copy, j, i);
+            if(getEvent(copy) == NONE) {
+                pass = false;
+                break;
+            }
+            // Reset the copy
+            deepCopy(reversi, copy);
+        }
+    }
+    // Delete the copy
+    destroyReversi(copy);
+    if(reversi->event == PASS || reversi->event == END) {
+        reversi->event = END;
+    } else{
+        reversi->event = PASS;
+    }
+    reversi->turn = !reversi->turn;
+    return pass;
 }

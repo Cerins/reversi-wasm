@@ -80,6 +80,7 @@ TEST_CASE("countWhitePoints", "[whitePoints]") {
     REQUIRE(countWhitePoints(reversi) == 3);
     reversi->board[0] = BLACK;
     REQUIRE(countWhitePoints(reversi) == 2);
+    destroyReversi(reversi);
 }
 
 TEST_CASE("countBlackPoints", "[blackPoints]") {
@@ -89,6 +90,7 @@ TEST_CASE("countBlackPoints", "[blackPoints]") {
     REQUIRE(countBlackPoints(reversi) == 3);
     reversi->board[0] = WHITE;
     REQUIRE(countBlackPoints(reversi) == 2);
+    destroyReversi(reversi);
 }
 
 TEST_CASE("makeMove no piecies on the board", "[makeMove]") {
@@ -203,5 +205,50 @@ TEST_CASE("Multiple makeMove calls", "[makeMove]") {
     makeMove(reversi, 2 , 5);
     REQUIRE(reversi->event == NONE);
     sameBoard(afterWhite, reversi);
+    destroyReversi(reversi);
+}
+
+TEST_CASE("PassCheck on empty board", "[passCheck]"){
+    std::array<std::array<char, 8>, 8> board = {{
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'}
+    }};
+    Reversi* reversi = createFrom(board, BLACK);
+    REQUIRE(passCheck(reversi) == true);
+    REQUIRE(reversi->event == PASS);
+    REQUIRE(passCheck(reversi) == true);
+    REQUIRE(reversi->event == END);
+    REQUIRE(passCheck(reversi) == true);
+    REQUIRE(reversi->event == END);
+    sameBoard(board, reversi);
+    destroyReversi(reversi);
+}
+
+TEST_CASE("PassCheck on filled board but no legal moves", "[passCheck]"){
+    std::array<std::array<char, 8>, 8> board = {{
+        {'W', '.', '.', '.', '.', '.', '.', '.'},
+        {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'},
+        {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'},
+        {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'},
+        {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'},
+        {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'},
+        {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'},
+        {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'}
+    }};
+    Reversi* reversi = createFrom(board, WHITE);
+    printBoard(reversi);
+    REQUIRE(passCheck(reversi) == false);
+    printBoard(reversi);
+    REQUIRE(reversi->event == PASS);
+    sameBoard(board, reversi);
+    REQUIRE(passCheck(reversi) == false);
+    REQUIRE(reversi->event == END);
+    sameBoard(board, reversi);
     destroyReversi(reversi);
 }
