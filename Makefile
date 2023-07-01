@@ -1,6 +1,6 @@
 SRC = src/main.cpp src/reversi.cpp
 
-TEST_SRC = src/tests/test.cpp
+TEST_SRC = src/tests/test.cpp src/reversi.cpp
 
 TARGET_DIR = dist
 

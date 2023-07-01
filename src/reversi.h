@@ -6,18 +6,23 @@ enum Color {
     BLACK = 1,
     UNDEFINED = 2
 };
+inline Color operator^(Color a, int b)
+{
+    return static_cast<Color>(static_cast<int>(a) | b);
+}
 
 enum Event {
     NONE = 0,
     PASS = 1,
-    END = 2
+    ILLEGAL_MOVE = 2,
+    END = 3
 };
 
 struct Reversi {
     int size;
-    Color* board;
+    int* board;
     Event event;
-    Color turn;
+    bool turn;
 };
 
 
@@ -29,11 +34,22 @@ int countWhitePoints(Reversi* reversi);
 
 int countBlackPoints(Reversi* reversi);
 
-Color* getBoard(Reversi* reversi);
+// This functions check if there is a legal move
+// otherwise will set the event to PASS
+// if there was no PASS event before
+// if there was PASS event before
+// it will set the event to END
+bool passCheck(Reversi* reversi);
 
-Color getTurn(Reversi* reversi);
+int* getBoard(Reversi* reversi);
+
+void printBoard(Reversi* reversi);
+
+int getTurn(Reversi* reversi);
 
 Event getEvent(Reversi* reversi);
+
+void makeMove(Reversi* reversi, int x, int y);
 
 void playerMove(Reversi* reversi, int x, int y);
 
