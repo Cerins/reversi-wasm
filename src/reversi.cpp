@@ -87,9 +87,6 @@ void makeMove(Reversi* reversi, int x, int y){
     // Now this function both flips all the items
     for(int dx=-1;dx<=1;dx++){
         for(int dj=-1;dj<=1;dj++){
-            if(dx == 0 && dj == 0) {
-                continue;
-            }
             int catched = 0;
             int direction = 1;
             // Now is i an extremely interesting loop

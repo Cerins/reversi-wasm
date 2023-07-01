@@ -242,9 +242,7 @@ TEST_CASE("PassCheck on filled board but no legal moves", "[passCheck]"){
         {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'}
     }};
     Reversi* reversi = createFrom(board, WHITE);
-    printBoard(reversi);
     REQUIRE(passCheck(reversi) == false);
-    printBoard(reversi);
     REQUIRE(reversi->event == PASS);
     sameBoard(board, reversi);
     REQUIRE(passCheck(reversi) == false);
