@@ -37,7 +37,7 @@ void sameBoard(const std::array<std::array<char, 8>, 8> &expected, Reversi* actu
 
 TEST_CASE("Reversi board creation", "[board]") {
     Reversi* reversi = createReversi();
-    int* board = getBoard(reversi);
+    auto board = getBoard(reversi);
     for(int i=0;i<reversi->size*reversi->size;i++) {
         if(i == 27 || i == 36){
             REQUIRE(board[i] == WHITE);

@@ -16,12 +16,9 @@ Module.onRuntimeInitialized = async _ => {
     console.log('reversi', _reversi)
     const event = getEvent(_reversi)
     const _board = getBoard(_reversi)
-    const startIndex = _board / 4
+    const startIndex = _board 
     const endIndex = startIndex + 64 // 8x8 board
-    // Yea the board use 32 bit integers, absolutely not needed, but i was lazy
-    // TODO: change to 8 bit integers someday
-    const board = Module.HEAP32.subarray(startIndex, endIndex);
+    const board = Module.HEAPU8.subarray(startIndex, endIndex);
     console.log('board', board)
-    main();
     destroyReversi(_reversi)
 }

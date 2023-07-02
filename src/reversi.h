@@ -1,5 +1,6 @@
 #ifndef REVERSI_H
 #define REVERSI_H
+#include <cstdint>
 
 enum Color {
     WHITE = 0,
@@ -19,9 +20,9 @@ enum Event {
 };
 
 struct Reversi {
-    const int size = 8;
-    int board[64];
-    Event event;
+    const uint8_t size = 8;
+    uint8_t board[64];
+    uint8_t event;
     bool turn;
 };
 
@@ -31,9 +32,9 @@ extern "C" {
 
     void destroyReversi(Reversi* reversi);
 
-    int countWhitePoints(Reversi* reversi);
+    uint8_t countWhitePoints(Reversi* reversi);
 
-    int countBlackPoints(Reversi* reversi);
+    uint8_t countBlackPoints(Reversi* reversi);
 
     // This functions check if there is a legal move
     // otherwise will set the event to PASS
@@ -42,13 +43,13 @@ extern "C" {
     // it will set the event to END
     bool passCheck(Reversi* reversi);
 
-    int* getBoard(Reversi* reversi);
+    uint8_t* getBoard(Reversi* reversi);
 
     void printBoard(Reversi* reversi);
 
-    int getTurn(Reversi* reversi);
+    uint8_t getTurn(Reversi* reversi);
 
-    Event getEvent(Reversi* reversi);
+    uint8_t getEvent(Reversi* reversi);
 
     void makeMove(Reversi* reversi, int x, int y);
 

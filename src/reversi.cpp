@@ -29,19 +29,19 @@ void destroyReversi(Reversi* reversi){
 }
 
 
-int* getBoard(Reversi* reversi){
+uint8_t* getBoard(Reversi* reversi){
     return reversi->board;
 }
 
-int getTurn(Reversi* reversi){
+uint8_t getTurn(Reversi* reversi){
     return reversi->turn;
 }
 
-Event getEvent(Reversi* reversi){
+uint8_t getEvent(Reversi* reversi){
     return reversi->event;
 }
 
-int countWhitePoints(Reversi* reversi){
+uint8_t countWhitePoints(Reversi* reversi){
     int whitePoints = 0;
     for(int i=0;i<reversi->size*reversi->size;i++) {
         if(reversi->board[i] == WHITE) {
@@ -51,7 +51,7 @@ int countWhitePoints(Reversi* reversi){
     return whitePoints;
 }
 
-int countBlackPoints(Reversi* reversi){
+uint8_t countBlackPoints(Reversi* reversi){
     int blackPoints = 0;
     for(int i=0;i<reversi->size*reversi->size;i++) {
         if(reversi->board[i] == BLACK) {
