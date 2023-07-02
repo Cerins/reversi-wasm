@@ -57,6 +57,8 @@
     grid-gap: 0px;
     background-color: white;
     background-color: green;
+    width: fit-content;
+    margin: 0 auto;
 }
 
 #game-footer {

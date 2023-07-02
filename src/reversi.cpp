@@ -236,7 +236,7 @@ int evalPos(Reversi* reversi, Color c){
     return score;
 }
 
-int computerMoveUtil(Reversi* reversi, Color c, int depth, int startDepth, bool maximize) {
+int computerMoveUtil(Reversi* reversi, Color c, int depth, int startDepth, bool maximize, int alpha, int beta) {
     bool gameEnded = reversi->event == END;
     if(depth == 0 || gameEnded) {
         return evalPos(reversi, c);
@@ -244,36 +244,31 @@ int computerMoveUtil(Reversi* reversi, Color c, int depth, int startDepth, bool 
     Reversi* best = new Reversi;
     Reversi* copy = new Reversi;
     int res = 0;
-    //std::cout << "-----------------" << std::endl;
-    //std::cout << "Depth " <<  depth << std::endl;
     if(maximize) {
         int maxEval = INT32_MIN;
-        //std::cout << "Maximizing" << std::endl;
-        for(int index=0;index<reversi->size*reversi->size;index++){
-            //std::cout << "index: " << index << std::endl;
+        for(int index=0; index<reversi->size*reversi->size; index++){
             if(reversi->board[index] == UNDEFINED) {
                 deepCopy(reversi, copy);
                 int x = index % reversi->size;
                 int y = index / reversi->size;
-                //std::cout << "Checking x: " << x << " y: " << y << std::endl;
                 makeMove(copy, x, y);
                 if(copy->event == ILLEGAL_MOVE) {
-                    //std::cout << "Illegal move" << std::endl;
                     continue;
                 }
-                int eval = computerMoveUtil(copy, c, depth-1, depth, false);
+                int eval = computerMoveUtil(copy, c, depth-1, startDepth, false, alpha, beta);
                 if(eval > maxEval) {
-                    //std::cout << "Found a better move" << std::endl;
                     deepCopy(copy, best);
                 }
                 maxEval = std::max(maxEval, eval);
+                alpha = std::max(alpha, eval);
+                if (beta <= alpha) {
+                    break; // Beta cut-off
+                }
             }
         }
-        // Did not find best move - all were illegal
         if(maxEval == INT32_MIN) {
-            int eval = computerMoveUtil(reversi, c, depth-1, depth, false);
+            int eval = computerMoveUtil(reversi, c, depth-1, startDepth, false, alpha, beta);
             if(eval > maxEval) {
-                //std::cout << "Found no legal move" << std::endl;
                 deepCopy(reversi, best);
             }
             maxEval = std::max(maxEval, eval);
@@ -290,16 +285,19 @@ int computerMoveUtil(Reversi* reversi, Color c, int depth, int startDepth, bool 
                 if(copy->event == ILLEGAL_MOVE) {
                     continue;
                 }
-                int eval = computerMoveUtil(copy, c, depth-1, depth, true);
+                int eval = computerMoveUtil(copy, c, depth-1, startDepth, true, alpha, beta);
                 if(eval < minEval) {
                     deepCopy(copy, best);
                 }
                 minEval = std::min(minEval, eval);
+                beta = std::min(beta, eval);
+                if (beta <= alpha) {
+                    break; // Alpha cut-off
+                }
             }
         }
-        // Did not find best move - all were illegal
         if(minEval == INT32_MAX) {
-            int eval = computerMoveUtil(reversi, c, depth-1, depth, true);
+            int eval = computerMoveUtil(reversi, c, depth-1, startDepth, true, alpha, beta);
             if(eval < minEval) {
                 deepCopy(reversi, best);
             }
@@ -316,5 +314,7 @@ int computerMoveUtil(Reversi* reversi, Color c, int depth, int startDepth, bool 
 }
 
 void computerMove(Reversi* reversi, int depth){
-    computerMoveUtil(reversi, (Color)reversi->turn, depth, depth, true);
+    int alpha = INT32_MIN;
+    int beta = INT32_MAX;
+    computerMoveUtil(reversi, (Color)reversi->turn, depth, depth, true, alpha, beta);
 }

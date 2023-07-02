@@ -171,7 +171,7 @@ const main = () => {
             setTimeout(() => {
                 const oldBoard = new Uint8Array(game.board);
                 rendered.setOld(oldBoard)
-                game.computerMove(7)
+                game.computerMove(10)
                 loop()
             }, 500)
             return
