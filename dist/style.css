@@ -1,10 +1,19 @@
 /* TODO SCSS rewrite would be nice */
 #game-container {
-    background-color: red;
+    width: 90%;
+    height: 80vh;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    /* center the game container */
+    align-items: center;
+    margin: 0 auto;
 }
 
 #game-header {
-
+    min-height: 100px;
+    width: 100%;
+    background-color: white;
 }
 
 .tile {
@@ -48,9 +57,6 @@
 }
 
 #game-body {
-    /* The game board is a grid of 8x8 squares */
-    /* The grid is made up of 64 squares */
-    /* Each square is 50px by 50px */
     display: grid;
     grid-template-columns: repeat(8, 50px);
     grid-template-rows: repeat(8, 50px);
@@ -58,9 +64,10 @@
     background-color: white;
     background-color: green;
     width: fit-content;
-    margin: 0 auto;
 }
 
 #game-footer {
-
+    min-height: 100px;
+    background-color: white;
+    width: 100%;
 }

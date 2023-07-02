@@ -72,7 +72,7 @@ const main = () => {
     class Renderer {
         
         constructor() {
-
+            this.onClick = () => {}
             this.gameContainer = document.getElementById('game-container')
             // Delete all children
             while (this.gameContainer.firstChild) {
@@ -97,6 +97,29 @@ const main = () => {
             this.gameContainer.appendChild(this.gameFooter)
 
             this.oldBoard = new Uint8Array(64).fill(Color.UNDEFINED)
+
+            const getGridSize = () => {
+                // get the height of the game container
+                const height = this.gameContainer.clientHeight
+                // get the width of the game container
+                const width = this.gameContainer.clientWidth
+                // get the height of the footer
+                const footerHeight = this.gameFooter.clientHeight
+                // get the height of the header
+                const headerHeight = this.gameHeader.clientHeight
+                const actualHeight = height - footerHeight - headerHeight
+                const size = Math.min(actualHeight, width)
+                return Math.floor(size/8)
+            }
+
+            const resize = () => {
+                // Set game-body grid template columns and rows
+                const size = getGridSize()
+                this.gameBody.style.gridTemplateColumns = `repeat(8, ${size}px)`
+                this.gameBody.style.gridTemplateRows = `repeat(8, ${size}px)`
+            }
+            resize()
+            window.addEventListener('resize', resize)
         }
 
         // The board accepts Uint8Array of size 64
@@ -112,8 +135,9 @@ const main = () => {
             this.oldBoard = board
         }
 
-        renderBoard(board, onClick) {
+        renderBoard(board) {
             // Delete all children of game body
+            const onClick = this.onClick
             while (this.gameBody.firstChild) {
                 this.gameBody.removeChild(this.gameBody.firstChild);
             }
@@ -139,6 +163,15 @@ const main = () => {
     }
     const game = new Game()
     const rendered = new Renderer()
+    rendered.onClick = (i) => {
+        const x = i % 8
+        const y = Math.floor(i / 8)
+        // Create board deep copy
+        const oldBoard = new Uint8Array(game.board);
+        rendered.setOld(oldBoard)
+        game.playerMove(x, y)
+        setTimeout(() => loop(), 0)
+    }
     function loop() {
         const passCheck = game.passCheck()
         const gameEnded = game.event === Event.END
@@ -166,7 +199,7 @@ const main = () => {
         }
         if(game.turn === 'black') {
             rendered.setHeader(buildMessage(game.event) + '\nComputer is thinking...')
-            rendered.renderBoard(game.board, () => {})
+            rendered.renderBoard(game.board)
 
             setTimeout(() => {
                 const oldBoard = new Uint8Array(game.board);
@@ -177,19 +210,7 @@ const main = () => {
             return
         }
         rendered.setHeader(buildMessage(game.event))
-        rendered.renderBoard(game.board, (i) => {
-            if(!gameEnded) {
-                const x = i % 8
-                const y = Math.floor(i / 8)
-                // Create board deep copy
-                const oldBoard = new Uint8Array(game.board);
-                rendered.setOld(oldBoard)
-                game.playerMove(x, y)
-                setTimeout(() => loop(), 0)
-            } else {
-                game.destroy()
-            }
-        })
+        rendered.renderBoard(game.board)
     }
     loop()
 }
