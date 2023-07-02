@@ -25,34 +25,37 @@ struct Reversi {
     bool turn;
 };
 
+extern "C" {
 
-Reversi* createReversi(void);
+    Reversi* createReversi(void);
 
-void destroyReversi(Reversi* reversi);
+    void destroyReversi(Reversi* reversi);
 
-int countWhitePoints(Reversi* reversi);
+    int countWhitePoints(Reversi* reversi);
 
-int countBlackPoints(Reversi* reversi);
+    int countBlackPoints(Reversi* reversi);
 
-// This functions check if there is a legal move
-// otherwise will set the event to PASS
-// if there was no PASS event before
-// if there was PASS event before
-// it will set the event to END
-bool passCheck(Reversi* reversi);
+    // This functions check if there is a legal move
+    // otherwise will set the event to PASS
+    // if there was no PASS event before
+    // if there was PASS event before
+    // it will set the event to END
+    bool passCheck(Reversi* reversi);
 
-int* getBoard(Reversi* reversi);
+    int* getBoard(Reversi* reversi);
 
-void printBoard(Reversi* reversi);
+    void printBoard(Reversi* reversi);
 
-int getTurn(Reversi* reversi);
+    int getTurn(Reversi* reversi);
 
-Event getEvent(Reversi* reversi);
+    Event getEvent(Reversi* reversi);
 
-void makeMove(Reversi* reversi, int x, int y);
+    void makeMove(Reversi* reversi, int x, int y);
 
-void playerMove(Reversi* reversi, int x, int y);
+    void playerMove(Reversi* reversi, int x, int y);
 
-void computerMove(Reversi* reversi);
+    void computerMove(Reversi* reversi);
+
+}
 
 #endif //REVERSI_H

@@ -12,7 +12,10 @@ CC = emcc
 
 CXX = g++
 
-CFLAGS = -O3 -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["cwrap"]'
+# Export functions defined in reversi.h
+EXPORTED_FUNCTIONS = -s EXPORTED_FUNCTIONS='["_createReversi", "_destroyReversi", "_passCheck", "_getBoard", "_getEvent", "_playerMove", "_countWhitePoints", "_countBlackPoints", "_main"]'
+
+CFLAGS = -O3 -s WASM=1 $(EXPORTED_FUNCTIONS) -s  EXPORTED_RUNTIME_METHODS='["cwrap"]'
 
 # Add highest level of debug
 CXXFLAGS = -std=c++17 -g -Wall -Wextra -pedantic
