@@ -242,11 +242,53 @@ TEST_CASE("PassCheck on filled board but no legal moves", "[passCheck]"){
         {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'}
     }};
     Reversi* reversi = createFrom(board, WHITE);
-    REQUIRE(passCheck(reversi) == false);
+    REQUIRE(passCheck(reversi) == true);
     REQUIRE(reversi->event == PASS);
     sameBoard(board, reversi);
-    REQUIRE(passCheck(reversi) == false);
+    REQUIRE(passCheck(reversi) == true);
     REQUIRE(reversi->event == END);
     sameBoard(board, reversi);
     destroyReversi(reversi);
 }
+
+TEST_CASE("PassCheck on a board with a move", "[passCheck]"){
+    std::array<std::array<char, 8>, 8> board = {{
+        {'B', 'W', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'}
+    }};
+    Reversi* reversi = createFrom(board, BLACK);
+    REQUIRE(passCheck(reversi) == false);
+    REQUIRE(reversi->event == NONE);
+    sameBoard(board, reversi);
+    REQUIRE(passCheck(reversi) == false);
+    REQUIRE(reversi->event == NONE);
+    sameBoard(board, reversi);
+    destroyReversi(reversi);
+}
+TEST_CASE("PassCheck on a board with a starting board", "[passCheck]"){
+    std::array<std::array<char, 8>, 8> board = {{
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', 'B', 'W', '.', '.', '.'},
+        {'.', '.', '.', 'W', 'B', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'}
+    }};
+    Reversi* reversi = createFrom(board, BLACK);
+    REQUIRE(passCheck(reversi) == false);
+    REQUIRE(reversi->event == NONE);
+    sameBoard(board, reversi);
+    REQUIRE(passCheck(reversi) == false);
+    REQUIRE(reversi->event == NONE);
+    sameBoard(board, reversi);
+    destroyReversi(reversi);
+}
+

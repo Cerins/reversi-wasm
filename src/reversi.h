@@ -36,6 +36,8 @@ extern "C" {
 
     uint8_t countBlackPoints(Reversi* reversi);
 
+    void deepCopy(Reversi* reversi, Reversi* copy);
+
     // This functions check if there is a legal move
     // otherwise will set the event to PASS
     // if there was no PASS event before

@@ -1,0 +1,64 @@
+/* TODO SCSS rewrite would be nice */
+#game-container {
+    background-color: red;
+}
+
+#game-header {
+
+}
+
+.tile {
+    /* Each square size is controller by the game-body
+    but i need to set the border here */
+    border: 1px solid black;
+    /* center child by using flex */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tile:not([color="empty"])::before {
+    content: "";
+    display: block;
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    /*animation: grow 300ms forwards; /* Adjust the duration and easing as needed */
+}
+
+.tile.new:not([color="empty"])::before {
+    height: 0;
+    width: 0;
+    animation: grow 300ms forwards; /* Adjust the duration and easing as needed */
+}
+
+@keyframes grow {
+    to {
+        height: 100%;
+        width: 100%;
+    }
+}
+
+.tile[color="black"]::before {
+    background-color: black;
+}
+
+.tile[color="white"]::before {
+    background-color: white;
+}
+
+#game-body {
+    /* The game board is a grid of 8x8 squares */
+    /* The grid is made up of 64 squares */
+    /* Each square is 50px by 50px */
+    display: grid;
+    grid-template-columns: repeat(8, 50px);
+    grid-template-rows: repeat(8, 50px);
+    grid-gap: 0px;
+    background-color: white;
+    background-color: green;
+}
+
+#game-footer {
+
+}

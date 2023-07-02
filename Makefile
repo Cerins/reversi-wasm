@@ -13,7 +13,7 @@ CC = emcc
 CXX = g++
 
 # Export functions defined in reversi.h
-EXPORTED_FUNCTIONS = -s EXPORTED_FUNCTIONS='["_createReversi", "_destroyReversi", "_passCheck", "_getBoard", "_getEvent", "_playerMove", "_countWhitePoints", "_countBlackPoints", "_main"]'
+EXPORTED_FUNCTIONS = -s EXPORTED_FUNCTIONS='["_createReversi", "_destroyReversi", "_passCheck", "_getBoard", "_getEvent", "_getTurn", "_playerMove", "_countWhitePoints", "_countBlackPoints", "_main"]'
 
 CFLAGS = -O3 -s WASM=1 $(EXPORTED_FUNCTIONS) -s  EXPORTED_RUNTIME_METHODS='["cwrap"]'
 

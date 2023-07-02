@@ -2,6 +2,9 @@
 #include <iostream>
 #include <cstring>
 
+// TODO there a lot of debug prints in this file
+// clean them up
+
 Reversi* createReversi(void){
     Reversi* reversi = new Reversi;
     // Reversi is played on a 8x8 board
@@ -86,9 +89,11 @@ void makeMove(Reversi* reversi, int x, int y){
     bool legalMove = false;
     // Now this function both flips all the items
     for(int dx=-1;dx<=1;dx++){
-        for(int dj=-1;dj<=1;dj++){
+        for(int dy=-1;dy<=1;dy++){
             int catched = 0;
             int direction = 1;
+            x = oX;
+            y = oY;
             // Now is i an extremely interesting loop
             // It works like so:
             // i go dx and dy until i i have found an item that is the same color as the current player
@@ -99,26 +104,54 @@ void makeMove(Reversi* reversi, int x, int y){
             // then xor and going back ensures that i dont flip any pieces
 
             x += dx * direction;
-            y += dj * direction;
+            y += dy * direction;
+            //std::cout << "----------------------------" << std::endl;
             while(true) {
                 // If i am out of bounds i simply flip around
+                /*std::cout << "moving: " << x << " " << y << std::endl;
+                std::cout << "dx: " << dx << " dy: " << dy << std::endl;
+                std::cout << "oX: " << oX << " oY: " << oY << std::endl;
+                std::cout << "direction: " << direction << std::endl;
+                std::cout << "cached: " << catched << std::endl;*/
                 if(x < 0 || x >= reversi->size || y < 0 || y >= reversi->size) {
                     direction = -direction;
                     x += dx * direction;
-                    y += dj * direction;
+                    y += dy * direction;
                 }
                 // If i am on an undefined cell i simply flip around
                 index = x + y*reversi->size;
                 if(reversi->board[index] == UNDEFINED) {
                     direction = -direction;
                     x += dx * direction;
-                    y += dj * direction;
+                    y += dy * direction;
                 }
+
+                /*std::cout << "after checks: " << x << " " << y << std::endl;
+                std::cout << "dx: " << dx << " dy: " << dy << std::endl;
+                std::cout << "oX: " << oX << " oY: " << oY << std::endl;
+                std::cout << "direction: " << direction << std::endl;
+                std::cout << "cached: " << catched << std::endl;*/
+
                 // Need to recalculate the index
                 index = x + y*reversi->size;
                 // If i have reached the same color then i exit the loop
                 // the legal move is only if i catched at least one piece
-                if(reversi->board[index] == reversi->turn) {
+
+                // ah there was a bug here
+                // i can not check for the same color
+                // since i flipped everything
+                // so the actual check is rather simple - i arrived to the same point
+                // or i  hit the same color with positive direction
+                bool samePoint = x == oX && y == oY;
+                bool sameColor = reversi->board[index] == reversi->turn;
+                bool foundOtherPiece = sameColor && direction > 0;
+                if(samePoint || foundOtherPiece) {
+                    /*if(catched > 0){
+                        std::cout << "catched final: " << catched << std::endl;
+                        std::cout << "dx: " << dx << " dy: " << dy << std::endl;
+                        std::cout << "oX: " << oX << " oY: " << oY << std::endl;
+                        std::cout << "x: " << x << " y: " << y << std::endl;
+                    }*/
                     legalMove = legalMove || catched > 0;
                     break;
                 }
@@ -128,7 +161,7 @@ void makeMove(Reversi* reversi, int x, int y){
                 // Depending on the direction
                 catched+=direction;
                 x += dx * direction;
-                y += dj * direction;
+                y += dy * direction;
             }
         }
     }
@@ -162,7 +195,10 @@ bool passCheck(Reversi* reversi){
     for(int i=0;i<boardSize;i++){
         for(int j=0;j<boardSize;j++){
             makeMove(copy, j, i);
+            //std::cout << (int)copy->event << std::endl;
             if(getEvent(copy) == NONE) {
+                //std::cout << "Found a legal move" << std::endl;
+                //std::cout << "x: " << j << " y: " << i << std::endl;
                 pass = false;
                 break;
             }
@@ -172,11 +208,13 @@ bool passCheck(Reversi* reversi){
     }
     // Delete the copy
     destroyReversi(copy);
-    if(reversi->event == PASS || reversi->event == END) {
-        reversi->event = END;
-    } else{
-        reversi->event = PASS;
+    if(pass){
+        if(reversi->event == PASS || reversi->event == END) {
+            reversi->event = END;
+        } else{
+            reversi->event = PASS;
+        }
+        reversi->turn = !reversi->turn;
     }
-    reversi->turn = !reversi->turn;
     return pass;
 }
