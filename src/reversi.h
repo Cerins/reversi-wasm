@@ -57,7 +57,7 @@ extern "C" {
 
     void playerMove(Reversi* reversi, int x, int y);
 
-    void computerMove(Reversi* reversi);
+    void computerMove(Reversi* reversi, int depth);
 
 }
 

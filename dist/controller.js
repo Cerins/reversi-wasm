@@ -36,6 +36,7 @@ const main = () => {
             this._reversi = this._reversi()
             this.$playerMove = Module.cwrap('playerMove', null, ['number', 'number', 'number'])
             this.$passCheck = Module.cwrap('passCheck', 'number', ['number'])
+            this.$computerMove = Module.cwrap('computerMove', null, ['number', 'number'])
         }
         get event() {
             return this.$getEvent(this._reversi)
@@ -57,6 +58,9 @@ const main = () => {
                 this.$destroyReversi(this._reversi)
                 this._reversi = null
             }
+        }
+        computerMove(depth){
+            this.$computerMove(this._reversi, depth)
         }
         get turn() {
             if (this.$getTurn(this._reversi) === Color.WHITE) {
@@ -159,6 +163,18 @@ const main = () => {
                 message += `\nTurn: ${game.turn}`
             }
             return message
+        }
+        if(game.turn === 'black') {
+            rendered.setHeader(buildMessage(game.event) + '\nComputer is thinking...')
+            rendered.renderBoard(game.board, () => {})
+
+            setTimeout(() => {
+                const oldBoard = new Uint8Array(game.board);
+                rendered.setOld(oldBoard)
+                game.computerMove(7)
+                loop()
+            }, 500)
+            return
         }
         rendered.setHeader(buildMessage(game.event))
         rendered.renderBoard(game.board, (i) => {

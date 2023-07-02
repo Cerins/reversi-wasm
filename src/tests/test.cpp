@@ -292,3 +292,32 @@ TEST_CASE("PassCheck on a board with a starting board", "[passCheck]"){
     destroyReversi(reversi);
 }
 
+
+TEST_CASE("computerMove finds the best move", "[computerMove]"){
+    std::array<std::array<char, 8>, 8> start = {{
+        {'.', '.', '.', '.', '.', '.', 'B', '.'},
+        {'.', '.', '.', '.', '.', 'B', 'W', '.'},
+        {'.', '.', '.', '.', '.', '.', 'W', '.'},
+        {'.', '.', '.', '.', '.', '.', 'W', '.'},
+        {'.', '.', '.', '.', '.', '.', 'W', '.'},
+        {'.', '.', '.', '.', '.', '.', 'W', '.'},
+        {'.', '.', '.', '.', '.', '.', 'W', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'}
+    }};
+    std::array<std::array<char, 8>, 8> after = {{
+        {'.', '.', '.', '.', '.', '.', 'B', '.'},
+        {'.', '.', '.', '.', '.', 'B', 'B', '.'},
+        {'.', '.', '.', '.', '.', '.', 'B', '.'},
+        {'.', '.', '.', '.', '.', '.', 'B', '.'},
+        {'.', '.', '.', '.', '.', '.', 'B', '.'},
+        {'.', '.', '.', '.', '.', '.', 'B', '.'},
+        {'.', '.', '.', '.', '.', '.', 'B', '.'},
+        {'.', '.', '.', '.', '.', '.', 'B', '.'}
+    }};
+    Reversi* reversi = createFrom(start, BLACK);
+    computerMove(reversi, 3);
+    REQUIRE(reversi->event == NONE);
+    REQUIRE(reversi->turn == WHITE);
+    sameBoard(after, reversi);
+    destroyReversi(reversi);
+}
