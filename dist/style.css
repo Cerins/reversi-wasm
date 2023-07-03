@@ -13,7 +13,7 @@
 #game-header {
     min-height: 100px;
     width: 100%;
-    background-color: white;
+    background-color: whitesmoke;
 }
 
 .tile {
@@ -76,4 +76,35 @@
     min-height: 100px;
     background-color: white;
     width: 100%;
+    background-color: whitesmoke;
 }
+
+#options {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+#player-v-player{
+    width: 50%;
+}
+
+#player-v-player > button {
+    font-size: 30px;
+}
+
+#player-v-computer{
+    width: 50%;
+    display: flex;
+}
+
+#player-v-computer > button {
+    font-size: 30px;
+    display: flex;
+}
+
+#game-container button {
+    font-size: 30px
+}
+
+

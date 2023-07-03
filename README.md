@@ -1,10 +1,8 @@
 # What is this?
 
-This is a C++/JavaScript/HTML, which demonstrates the use of WebAssembly.
+This is Reversi game written in C++/JavaScript/HTML, which demonstrates the use of WebAssembly.
 
 The C++ code is compiled to WebAssembly and then loaded into the browser.
-
-The page is a game of Reversi.
 
 The rules can be found [here](https://en.wikipedia.org/wiki/Reversi).
 
@@ -30,4 +28,10 @@ make serve
 
 ```bash
 make clean
+```
+
+## Run tests
+
+```bash
+make tests
 ```

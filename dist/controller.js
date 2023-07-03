@@ -89,6 +89,8 @@ const main = () => {
   }
   class Renderer {
     newGame(start, clear) {
+      // Remove all old
+      this.oldBoard = new Uint8Array(64).fill(Color.UNDEFINED);
       // Delete all children
       while (this.gameHeader.firstChild) {
         this.gameHeader.removeChild(this.gameHeader.firstChild);
@@ -110,7 +112,8 @@ const main = () => {
       const playerVPlayer = document.createElement("div");
       playerVPlayer.id = "player-v-player";
       const playButton = document.createElement("button");
-      playButton.innerText = "Player v Player local";
+
+      playButton.innerHTML = `<i class="fa fa-user"></i> vs <i class="fa fa-user"></i>`
       playButton.addEventListener("click", () => {
         this.options.ai = false;
         start();
@@ -121,24 +124,22 @@ const main = () => {
       const playerVComputer = document.createElement("div");
       playerVComputer.id = "player-v-computer";
       const computerButton = document.createElement("button");
-      computerButton.innerText = "Player v Computer";
+      computerButton.innerHTML = `<i class="fa fa-user"></i> vs <i class="fa fa-robot"></i>`
       computerButton.addEventListener("click", () => {
-        this.options.ai = true;
+        this.options.ai = true
         start();
       });
       // Add input for depth allow 1 to 10
       const depthInput = document.createElement("input");
       depthInput.type = "number";
       depthInput.min = 1;
-      depthInput.max = 10;
-      depthInput.value = 4;
+      depthInput.max = 12;
+      depthInput.value = this.options.depth;
       depthInput.addEventListener("change", () => {
         this.options.depth = depthInput.value;
       });
       const depthLabel = document.createElement("label");
       depthLabel.innerText = "Depth";
-      playerVComputer.appendChild(depthLabel);
-      playerVComputer.appendChild(depthInput);
       // Create a label for depth
       options.appendChild(playerVComputer);
       // Create a label and true false for will the player go first
@@ -148,14 +149,19 @@ const main = () => {
       firstLabel.innerText = "First";
       const firstInput = document.createElement("input");
       firstInput.type = "checkbox";
-      firstInput.checked = true;
+      firstInput.checked = this.options.first;
       firstInput.addEventListener("change", () => {
-        this.options.first = firstInput.checked;
+        this.options.first = !this.options.first;
       });
       first.appendChild(firstLabel);
       first.appendChild(firstInput);
+      const aiOptions = document.createElement("div");
+      aiOptions.id = "ai-options";
       playerVComputer.appendChild(computerButton);
-      options.appendChild(first);
+      playerVComputer.appendChild(aiOptions);
+      aiOptions.appendChild(depthLabel);
+      aiOptions.appendChild(depthInput);
+      aiOptions.appendChild(first);
       // Create a div that is the game footer
 
       // Create items for footer
@@ -291,10 +297,12 @@ const main = () => {
     setTimeout(() => loop(), 0);
   };
   function loop() {
+    const turn = game.turn;
     const passCheck = game.passCheck();
     const gameEnded = game.event === Event.END;
     if (passCheck && !gameEnded) {
-      setTimeout(() => loop(), 0);
+      rendered.setHeader(`${turn} has to pass`);
+      setTimeout(() => loop(), 1000);
       return;
     }
     const buildMessage = () => {
@@ -307,7 +315,17 @@ const main = () => {
           message += "Player illegal move";
           break;
         case Event.END:
-          message += "Game end";
+          const whitePoints = game.whitePoints;
+          const blackPoints = game.blackPoints;
+          let winner = "";
+          if(whitePoints > blackPoints) {
+            winner = "White won";
+          }else if(blackPoints > whitePoints) {
+            winner = "Black won";
+          }else {
+            winner = "Tie";
+          }
+          message += "Game over.\n" + winner;
           break;
       }
       if (game.event !== Event.END) {
@@ -326,7 +344,7 @@ const main = () => {
       setTimeout(() => {
         const oldBoard = new Uint8Array(game.board);
         rendered.setOld(oldBoard);
-        game.computerMove(10);
+        game.computerMove(rendered.options.depth);
         loop();
       }, 500);
       return;
