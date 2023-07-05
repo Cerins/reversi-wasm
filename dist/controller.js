@@ -287,15 +287,6 @@ const main = () => {
   }
   let game = new Game();
   const rendered = new Renderer();
-  rendered.onClick = (i) => {
-    const x = i % 8;
-    const y = Math.floor(i / 8);
-    // Create board deep copy
-    const oldBoard = new Uint8Array(game.board);
-    rendered.setOld(oldBoard);
-    game.playerMove(x, y);
-    setTimeout(() => loop(), 0);
-  };
   function loop() {
     const turn = game.turn;
     const passCheck = game.passCheck();
@@ -337,6 +328,7 @@ const main = () => {
     const aiPlace = rendered.options.first ? "white" : "black";
     const aiTurn = game.turn === aiPlace && playAgainstAI;
     if (aiTurn) {
+      rendered.onClick = () => {};
       rendered.setHeader(
         buildMessage(game.event) + "\nComputer is thinking..."
       );
@@ -348,6 +340,20 @@ const main = () => {
         loop();
       }, 500);
       return;
+    } else {
+      if(!gameEnded) {
+        rendered.onClick = (i) => {
+          const x = i % 8;
+          const y = Math.floor(i / 8);
+          // Create board deep copy
+          const oldBoard = new Uint8Array(game.board);
+          rendered.setOld(oldBoard);
+          game.playerMove(x, y);
+          setTimeout(() => loop(), 0);
+        };
+      } else {
+        rendered.onClick = () => {};
+      }
     }
     rendered.setHeader(buildMessage(game.event));
     rendered.renderBoard(game.board);
