@@ -3,11 +3,17 @@
 // variables which are pointers to be somehow denoted
 // my method of doing this is to prefix them with a _
 
+/**
+ * Stores that load status of the window and the module
+ */
 const loaded = {
   window: false,
   Module: false,
 };
 
+/**
+ * Event definitions
+ */
 const Event = {
   NONE: 0,
   PASS: 1,
@@ -15,24 +21,33 @@ const Event = {
   END: 3,
 };
 
+/**
+ * Color definitions
+ */
 const Color = {
   WHITE: 0,
   BLACK: 1,
   UNDEFINED: 2,
 };
 
+/**
+ * The main game function
+ */
 const main = () => {
+  // Do not start until both the window and the module are loaded
   if (!(loaded.window && loaded.Module)) {
     return;
   }
   class Game {
     constructor() {
-      this._reversi = Module.cwrap("createReversi", "number", []);
+      // All of the function written in C++ wrapped in JS
+      this.$reversi = Module.cwrap("createReversi", "number", []);
       this.$destroyReversi = Module.cwrap("destroyReversi", null, ["number"]);
       this.$getEvent = Module.cwrap("getEvent", "number", ["number"]);
       this.$getBoard = Module.cwrap("getBoard", "number", ["number"]);
       this.$getTurn = Module.cwrap("getTurn", "number", ["number"]);
-      this._reversi = this._reversi();
+      // Reference the the reversi object
+      this._reversi = this.$reversi();
       this.$playerMove = Module.cwrap("playerMove", null, [
         "number",
         "number",
@@ -51,29 +66,47 @@ const main = () => {
       ]);
     }
     get event() {
+      // The the current event
       return this.$getEvent(this._reversi);
     }
     get board() {
       const startIndex = this.$getBoard(this._reversi);
       const endIndex = startIndex + 64; // 8x8 board
       const board = Module.HEAPU8.subarray(startIndex, endIndex);
+      // Return the Uint8Array, which represents the board
       return board;
     }
+    // Make a player move
     playerMove(x, y) {
       this.$playerMove(this._reversi, x, y);
     }
+    /**
+     * Check if the current player has to pass
+     * @returns {boolean} if the current player has to pass
+     */
     passCheck() {
       return Boolean(this.$passCheck(this._reversi));
     }
+    /**
+     * Memory cleanup
+     * Call this when the game is over
+     * or when the game is reset
+     */
     destroy() {
       if (this._reversi !== null) {
         this.$destroyReversi(this._reversi);
         this._reversi = null;
       }
     }
+    /**
+     * Make the computer move
+     */
     computerMove(depth) {
       this.$computerMove(this._reversi, depth);
     }
+    /**
+     * Get the current turn
+     */
     get turn() {
       if (this.$getTurn(this._reversi) === Color.WHITE) {
         return "white";
@@ -87,9 +120,12 @@ const main = () => {
       return this.$countBlackPoints(this._reversi);
     }
   }
+  /**
+   * The renderer class used for rendering the game
+   */
   class Renderer {
     newGame(start, clear) {
-      // Remove all old
+      // Remove all old items
       this.oldBoard = new Uint8Array(64).fill(Color.UNDEFINED);
       // Delete all children
       while (this.gameHeader.firstChild) {
@@ -120,7 +156,7 @@ const main = () => {
       });
       playerVPlayer.appendChild(playButton);
       options.appendChild(playerVPlayer);
-
+      // Create a div for player v computer
       const playerVComputer = document.createElement("div");
       playerVComputer.id = "player-v-computer";
       const computerButton = document.createElement("button");
@@ -129,7 +165,7 @@ const main = () => {
         this.options.ai = true
         start();
       });
-      // Add input for depth allow 1 to 10
+      // Add input for depth allow 1 to 12
       const depthInput = document.createElement("input");
       depthInput.type = "number";
       depthInput.min = 1;
@@ -228,7 +264,9 @@ const main = () => {
         const size = Math.min(actualHeight, width);
         return Math.floor(size / 8);
       };
-
+      /**
+       * Allow for the game board to be responsive
+       */
       const resize = () => {
         // Set game-body grid template columns and rows
         const size = getGridSize();
@@ -287,15 +325,18 @@ const main = () => {
   }
   let game = new Game();
   const rendered = new Renderer();
+  // The game loop
   function loop() {
     const turn = game.turn;
     const passCheck = game.passCheck();
     const gameEnded = game.event === Event.END;
+    // Simply pass if the player has to pass
     if (passCheck && !gameEnded) {
       rendered.setHeader(`${turn} has to pass`);
       setTimeout(() => loop(), 1000);
       return;
     }
+    // Build the different messages for the header
     const buildMessage = () => {
       let message = "";
       switch (game.event) {
@@ -324,15 +365,21 @@ const main = () => {
       }
       return message;
     };
+    // Extract options
     const playAgainstAI = rendered.options.ai;
     const aiPlace = rendered.options.first ? "white" : "black";
     const aiTurn = game.turn === aiPlace && playAgainstAI;
+    // If the aii is playing
     if (aiTurn) {
+      // Then remove the ability to click for the human
       rendered.onClick = () => {};
+      // Notify the user that the computer is thinking
       rendered.setHeader(
         buildMessage(game.event) + "\nComputer is thinking..."
       );
+      // Render the board before the computer move
       rendered.renderBoard(game.board);
+      // Make the computer move after 500ms
       setTimeout(() => {
         const oldBoard = new Uint8Array(game.board);
         rendered.setOld(oldBoard);
@@ -342,6 +389,8 @@ const main = () => {
       return;
     } else {
       if(!gameEnded) {
+        // Allow the user to click if the game has not ended
+        // Instantly render the new board if the user clicks
         rendered.onClick = (i) => {
           const x = i % 8;
           const y = Math.floor(i / 8);
@@ -352,9 +401,11 @@ const main = () => {
           setTimeout(() => loop(), 0);
         };
       } else {
+        // Forbid the user from clicking if the game has ended
         rendered.onClick = () => {};
       }
     }
+    // Set the information about the game
     rendered.setHeader(buildMessage(game.event));
     rendered.renderBoard(game.board);
     rendered.setFooter(
@@ -362,6 +413,7 @@ const main = () => {
     );
   }
   rendered.newGame(() => {
+    // Clean up the game before a new one
     game.destroy();
     // Renderer clear header
     while (rendered.gameHeader.firstChild) {
@@ -375,11 +427,15 @@ const main = () => {
 };
 
 window.onload = () => {
+  // Either the window is loaded or the module is loaded
+  // Call main just in case both are loaded
   loaded.window = true;
   main();
 };
 
 Module.onRuntimeInitialized = () => {
+  // Either the window is loaded or the module is loaded
+  // Call main just in case both are loaded
   loaded.Module = true;
   main();
 };
